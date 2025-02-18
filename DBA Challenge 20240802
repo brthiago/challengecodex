@@ -2,9 +2,9 @@ Dados Criados com MySQL:
 
 •	Listar todos Clientes que não tenham realizado uma compra;
 
-SELECT customer.customer_id, customer.fist_name, customer.last_name
-FROM customer
-LEFT JOIN orders ON customer.customer_id = orders.customer_id
+SELECT customers.customer_id, customers.fist_name, customers.last_name
+FROM customers
+LEFT JOIN orders ON customers.customer_id = orders.customer_id
 WHERE orders.customer_id IS NULL
 
 # Neste código eu tentei puxar diretamente pela base de orders, caso o cliente não possua o o customer_id em nenhum pedido, isso significa que ele nunca fez um pedido
@@ -23,7 +23,7 @@ WHERE order_items.product_id IS NULL
 SELECT products.product_id, products.product_name, stocks.quantity
 FROM products
 LEFT JOIN stocks ON products.product_id = stocks.product_id
-WHERE stock.quantity = 0 OR stocks.product_id IS NULL
+WHERE stocks.quantity = 0 OR stocks.product_id IS NULL
 
 # Neste caso, eu preferi fazer o filtro pensando em duas situações, o produto pode ser novo, e por isso não está contando ainda com estoque válido, oque pode ocasionar dele não estar registrado na base de Stock, ou o estoque pode estar vazio, em ambos os casos, ele registra e mostra na View.
 
@@ -34,11 +34,11 @@ FROM orders
 JOIN 
   order_items ON orders.order_id = order_items.order_id
 JOIN
-  products ON order_item.product_id = products.product_id
+  products ON order_items.product_id = products.product_id
 JOIN
   brands ON products.brand_id = brands.brand_id
 JOIN
-  stores ON orders.store_id = stores_store_id
+  stores ON orders.store_id = stores.store_id
 GROUP BY
   brands.brand_name
   stores.store_name
@@ -52,7 +52,7 @@ ORDER BY
 SELECT staffs.first_name, staffs.last_name, staffs.active
 FROM staffs
 LEFT JOIN orders ON staffs.staff_id = orders.staff_id
-WHERE orders.staff_id IS NULL and Staffs.Active = 'TRUE'
+WHERE orders.staff_id IS NULL and staffs.Active = 'TRUE'
 
-# Em esta questão, eu fiz o processo parecido dos anterioress, procurei os funcionários sem nenhum pedido vinculado na tabela de orders, e para refinar mais o resultado, coloquei que o status do funcionario tem que estar TRUE, ou seja, que ele ainda esteja trabalhando na companhia.
+# Em esta questão, eu fiz o processo parecido dos anteriores, procurei os funcionários sem nenhum pedido vinculado na tabela de orders, e para refinar mais o resultado, coloquei que o status do funcionario tem que estar TRUE, ou seja, que ele ainda esteja trabalhando na companhia.
 
