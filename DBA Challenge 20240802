@@ -1,2 +1,58 @@
 Dados Criados com MySQL:
 
+•	Listar todos Clientes que não tenham realizado uma compra;
+
+SELECT customer.customer_id, customer.fist_name, customer.last_name
+FROM customer
+LEFT JOIN orders ON customer.customer_id = orders.customer_id
+WHERE orders.customer_id IS NULL
+
+# Neste código eu tentei puxar diretamente pela base de orders, caso o cliente não possua o o customer_id em nenhum pedido, isso significa que ele nunca fez um pedido
+
+•	Listar os Produtos que não tenham sido comprados
+
+SELECT products.product_id, products.product_name
+FROM products
+LEFT JOIN order_items ON products.product_id = order_items.product_id
+WHERE order_items.product_id IS NULL
+
+# Este código tem uma lógica parecida com o anterior, eu faço cruzamento das bases e bato os produtos que não possuem nenhum registro em order_items, caso não possua, ele nunca foi comprado.
+
+•	Listar os Produtos sem Estoque;
+
+SELECT products.product_id, products.product_name, stocks.quantity
+FROM products
+LEFT JOIN stocks ON products.product_id = stocks.product_id
+WHERE stock.quantity = 0 OR stocks.product_id IS NULL
+
+# Neste caso, eu preferi fazer o filtro pensando em duas situações, o produto pode ser novo, e por isso não está contando ainda com estoque válido, oque pode ocasionar dele não estar registrado na base de Stock, ou o estoque pode estar vazio, em ambos os casos, ele registra e mostra na View.
+
+•	Agrupar a quantidade de vendas que uma determinada Marca por Loja.
+
+SELECT brands.brand_name, stores.store_name, COUNT(orders.order_id) as Quant_Vendas
+FROM orders
+JOIN 
+  order_items ON orders.order_id = order_items.order_id
+JOIN
+  products ON order_item.product_id = products.product_id
+JOIN
+  brands ON products.brand_id = brands.brand_id
+JOIN
+  stores ON orders.store_id = stores_store_id
+GROUP BY
+  brands.brand_name
+  stores.store_name
+ORDER BY
+  brands.brand_name
+  stores.store_name
+
+# Este foi o código mais desafiador, justamente pelo fato dos dados não estarem diretamente ligados, tive de fazer todo o caminho reverso pelas bases até chegar ao nome da marca, passando pela base de order_items, products e por fim a brands, a lógica é somar todos os códigos de pedidos para cada uma das marcas em cada uma das lojas, sendo assim, fazendo a função desejada.
+
+•	Listar os Funcionarios que não estejam relacionados a um Pedido
+SELECT staffs.first_name, staffs.last_name, staffs.active
+FROM staffs
+LEFT JOIN orders ON staffs.staff_id = orders.staff_id
+WHERE orders.staff_id IS NULL and Staffs.Active = 'TRUE'
+
+# Em esta questão, eu fiz o processo parecido dos anterioress, procurei os funcionários sem nenhum pedido vinculado na tabela de orders, e para refinar mais o resultado, coloquei que o status do funcionario tem que estar TRUE, ou seja, que ele ainda esteja trabalhando na companhia.
+
